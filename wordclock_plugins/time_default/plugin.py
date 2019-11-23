@@ -2,6 +2,7 @@ import datetime
 import os
 import time
 import time_english
+import time_mark
 import time_german
 import time_swabian
 import time_dutch
@@ -33,6 +34,8 @@ class plugin:
             self.taw = time_dutch.time_dutch()
         elif language == 'english':
             self.taw = time_english.time_english()
+        elif language == 'mark':
+            self.taw = time_mark.time_mark()
         elif language == 'german':
             self.taw = time_german.time_german()
         elif language == 'swabian':
@@ -100,10 +103,10 @@ class plugin:
             # Get current time
             now = datetime.datetime.now()
             # Check, if a minute has passed (to render the new time)
-            if prev_min < now.minute:
+            if prev_min != now.minute:
                 # Set background color
                 self.show_time(wcd, wci)
-                prev_min = -1 if now.minute == 59 else now.minute
+                prev_min = now.minute
             event = wci.waitForEvent(2)
             # Switch display color, if button_left is pressed
             if (event == wci.EVENT_BUTTON_LEFT):

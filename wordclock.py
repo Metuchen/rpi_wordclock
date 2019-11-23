@@ -1,3 +1,4 @@
+#!/usr/bin/env python2
 import ConfigParser
 from importlib import import_module
 import inspect

@@ -36,6 +36,9 @@ class wiring:
         elif wiring_layout == 'mini_wiring':
             self.LED_COUNT   = self.WCA_HEIGHT*(self.WCA_WIDTH+1)+3
             self.wcl = mini_wiring(self.WCA_WIDTH, self.WCA_HEIGHT)
+        elif wiring_layout == 'marks_wiring':
+            self.LED_COUNT   = 100
+            self.wcl = marks_wiring(self.WCA_WIDTH, self.WCA_HEIGHT)
         else:
             print('Warning: No valid wiring layout found. Falling back to default!')
             self.wcl = bernds_wiring(self.WCA_WIDTH, self.WCA_HEIGHT)
@@ -55,7 +58,7 @@ class wiring:
              (0,0): top-left
              (self.WCA_WIDTH-1, self.WCA_HEIGHT-1): bottom-right
         '''
-        strip.setPixelColor(self.wcl.getStripIndexFrom2D(x,y), color)
+        strip.set_pixel(self.wcl.getStripIndexFrom2D(x,y), color)
     def getStripIndexFrom2D(self, x,y):
         return self.wcl.getStripIndexFrom2D(x,y)
 
@@ -64,6 +67,62 @@ class wiring:
         Access minutes (1,2,3,4)
         '''
         return self.wcl.mapMinutes(min)
+
+class marks_wiring:
+    '''
+    A class, holding all information of the wordclock's layout to map given
+    timestamps, 2d-coordinates to the corresponding LEDs (corresponding to
+    the individual wiring/layout of any wordclock).
+    If a different wordclock wiring/layout is chosen, this class needs to be
+    adopted.
+    '''
+
+    def __init__(self, WCA_WIDTH, WCA_HEIGHT):
+        self.WCA_WIDTH   = WCA_WIDTH
+        self.WCA_HEIGHT  = WCA_HEIGHT
+        self.LED_COUNT   = 100
+        # 71 is dead...replaced by 99
+        self.MAP         = \
+              [[ 9,  8,  7, 71,  6,  5,  4,  3,  2,  1,  0], \
+               [71, 71, 10, 11, 12, 13, 14, 15, 71, 71, 71], \
+               [23, 22, 21, 20, 19, 18, 17, 71, 16, 71, 71], \
+               [71, 24, 25, 26, 71, 27, 71, 28, 29, 71, 71], \
+               [39, 38, 37, 36, 35, 34, 33, 32, 31, 30, 71], \
+               [40, 41, 42, 43, 44, 45, 71, 46, 47, 71, 71], \
+               [58, 57, 56, 55, 54, 53, 52, 51, 50, 49, 48], \
+               [59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69], \
+               [71, 77, 76, 75, 74, 73, 72, 99, 70, 71, 71], \
+               [78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88], \
+               [71, 71, 71, 94, 93, 92, 91, 90, 89, 71, 71]]
+
+    def getStripIndexFrom2D(self, x, y):
+        '''
+        Mapping coordinates to the wordclocks display
+        Needs hardware/wiring dependent implementation
+        Final range:
+             (0,0): top-left
+             (self.WCA_WIDTH-1, self.WCA_HEIGHT-1): bottom-right
+        '''
+        return self.MAP[y][x]
+
+    def mapMinutes(self, min):
+        '''
+        Access minutes (1,2,3,4)
+        Needs hardware/wiring dependent implementation
+        This implementation assumes the minutes to be wired as first and last two leds of the led-strip
+        '''
+        if min == 1:
+            return 95
+        elif min == 2:
+            return 96
+        elif min == 3:
+            return 97
+        elif min == 4:
+            return 98
+        else:
+            print('WARNING: Out of range, when mapping minutes...')
+            print(min)
+            return 0
 
 class bernds_wiring:
     '''

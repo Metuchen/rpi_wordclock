@@ -1,5 +1,6 @@
 import fontdemo
-from neopixel import *
+import Adafruit_WS2801
+import Adafruit_GPIO.SPI as SPI
 import os
 from PIL import Image
 import time
@@ -26,13 +27,13 @@ class wordclock_display:
             print('WARNING: Brightness value not set in config-file: To do so, add a "brightness" between 1..255 to the [wordclock_display]-section.')
             brightness = 255
         try:
-            self.strip = Adafruit_NeoPixel(self.wcl.LED_COUNT, self.wcl.LED_PIN, self.wcl.LED_FREQ_HZ, self.wcl.LED_DMA, self.wcl.LED_INVERT, brightness, 0, ws.WS2811_STRIP_GRB)
+            SPI_PORT   = 0
+            SPI_DEVICE = 0
+            self.strip = Adafruit_WS2801.WS2801Pixels(self.wcl.LED_COUNT, spi=SPI.SpiDev(SPI_PORT, SPI_DEVICE))
+             
         except:
             print('WARNING: Your NeoPixel dependency is to old to accept customized brightness values and correct RGB-settings.')
-            self.strip = Adafruit_NeoPixel(self.wcl.LED_COUNT, self.wcl.LED_PIN, self.wcl.LED_FREQ_HZ, self.wcl.LED_DMA, self.wcl.LED_INVERT)
-
-        # Initialize the NeoPixel object
-        self.strip.begin()
+            exit(0)
 
         self.default_font = os.path.join('/usr/share/fonts/truetype/freefont/', config.get('wordclock_display', 'default_font') + '.ttf')
         self.default_fg_color=wcc.WWHITE
@@ -44,14 +45,13 @@ class wordclock_display:
         '''
         Sets the color for a pixel, while considering the brightness, set within the config file
         '''
-        self.strip.setPixelColor(pixel, color)
+        self.strip.set_pixel(pixel,color)
 
     def setBrightness(self, brightness):
         '''
         Sets the color for a pixel, while considering the brightness, set within the config file
         '''
-        self.strip.setBrightness(brightness)
-
+        return
 
     def setColorBy1DCoordinates(self, *args, **kwargs):
         '''
