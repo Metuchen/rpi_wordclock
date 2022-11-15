@@ -1,13 +1,11 @@
-#!/usr/bin/env python2
-import ConfigParser
+#!/usr/bin/env python3
+import configparser
 from importlib import import_module
 import inspect
 import os
 import time
 from shutil import copyfile
-import wordclock_tools.wordclock_colors as wcc
 import wordclock_tools.wordclock_display as wcd
-import wordclock_tools.wordclock_socket as wcs
 import wordclock_interfaces.event_handler as wci
 import wordclock_interfaces.gpio_interface as wcigpio
 
@@ -34,7 +32,7 @@ class wordclock:
             copyfile(pathToConfigFileExample, pathToConfigFile)
             print('Warning: No config-file specified! Was created from example-config!')
         print('Parsing ' + pathToConfigFile)
-        self.config = ConfigParser.ConfigParser()
+        self.config = configparser.ConfigParser()
         self.config.read(pathToConfigFile)
 
         # Add to the loaded configuration the current base path to provide it
@@ -88,7 +86,6 @@ class wordclock:
         # Create object to interact with the wordclock using the interface of your choice
         self.plugin_index = 0
         self.run_next_index = None
-        self.wcs = wcs.wordclock_socket(self)
 
     def startup(self):
         '''
@@ -102,8 +99,6 @@ class wordclock:
         '''
         Runs the currently selected plugin
         '''
-
-        self.wcs.sendCurrentPlugin(self.plugin_index)
 
         #try:
         print('Running plugin ' + self.plugins[self.plugin_index].name + '.')
@@ -134,26 +129,6 @@ class wordclock:
                     self.plugin_index = self.run_next_index
                     self.run_next_index = None
                     self.runPlugin()
-
-            # If plugin.run exits, loop through menu to select next plugin
-            while True:
-                # The showIcon-command expects to have a plugin logo available
-                self.wcd.showIcon(plugin=self.plugins[self.plugin_index].name, iconName='logo')
-                time.sleep(self.wci.lock_time)
-                evt = self.wci.waitForEvent()
-                if evt == self.wci.EVENT_BUTTON_LEFT:
-                    self.plugin_index -=1
-                    if self.plugin_index == -1:
-                        self.plugin_index = len(self.plugins)-1
-                    time.sleep(self.wci.lock_time)
-                if evt == self.wci.EVENT_BUTTON_RETURN or evt == self.wci.EVENT_EXIT_PLUGIN:
-                    time.sleep(self.wci.lock_time)
-                    break
-                if evt == self.wci.EVENT_BUTTON_RIGHT:
-                    self.plugin_index +=1
-                    if self.plugin_index == len(self.plugins):
-                        self.plugin_index = 0
-                    time.sleep(self.wci.lock_time)
 
             # Run selected plugin
             self.runPlugin()

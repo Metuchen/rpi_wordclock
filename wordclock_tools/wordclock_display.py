@@ -1,11 +1,8 @@
-import fontdemo
 import Adafruit_WS2801
 import Adafruit_GPIO.SPI as SPI
 import os
-from PIL import Image
 import time
-import wordclock_colors as wcc
-import wiring
+from . import wiring
 
 class wordclock_display:
     '''
@@ -36,8 +33,8 @@ class wordclock_display:
             exit(0)
 
         self.default_font = os.path.join('/usr/share/fonts/truetype/freefont/', config.get('wordclock_display', 'default_font') + '.ttf')
-        self.default_fg_color=wcc.WWHITE
-        self.default_bg_color=wcc.BLACK
+        self.default_fg_color=((64*256)+64)*256+25
+        self.default_bg_color=0
         self.base_path=config.get('wordclock', 'base_path')
 
 
@@ -101,48 +98,6 @@ class wordclock_display:
         Reset display
         '''
         self.setColorToAll(wcc.BLACK, True)
-
-    def showIcon(self, plugin, iconName):
-        '''
-        Dispays an icon with a specified name.
-        The icon needs to be provided within the graphics/icons folder.
-        '''
-        self.setImage(self.base_path + '/wordclock_plugins/' + plugin + '/icons/' + self.dispRes() + '/' + iconName + '.png')
-
-    def setImage(self, absPathToImage):
-        '''
-        Set image (provided as absolute path) to current display
-        '''
-        img = Image.open(absPathToImage)
-        width, height = img.size
-        for x in range (0,width):
-            for y in range (0,height):
-                rgb_img = img.convert('RGB')
-                r, g, b = rgb_img.getpixel((x, y))
-                self.wcl.setColorBy2DCoordinates(self.strip, x, y, wcc.Color(r, g, b))
-        self.show()
-
-    def animate(self, plugin, animationName, fps=10, count=1, invert=False):
-        '''
-        Runs an animation
-        plugin: Plugin-name
-        num_of_frames: Number of frames to be displayed
-        count: Number of runs
-        fps: frames per second
-        invert: Invert order of animation
-        '''
-        animation_dir = self.base_path + '/wordclock_plugins/' + plugin + '/animations/' + self.dispRes() + '/' + animationName + '/'
-        num_of_frames = len([file_count for file_count in os.listdir(animation_dir)])
-
-        if invert:
-            animation_range=range(num_of_frames-1, -1, -1)
-        else:
-            animation_range=range(0, num_of_frames)
-
-        for _ in range(count):
-            for i in animation_range:
-                self.setImage(animation_dir + str(i).zfill(3) + '.png')
-                time.sleep(1.0/fps)
 
     def showText(self, text, font=None, fg_color=None, bg_color=None, fps=10, count=1):
         '''

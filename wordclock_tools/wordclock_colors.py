@@ -1,18 +1,2 @@
-from neopixel import *
-
-# Define colors which are available for the wcd. Currenly: Alphabetic order
-BLACK = Color(  0,  0,  0)
-BLUE  = Color(  0,  0,255)
-PURPLE= Color(128,0,128)
-PEACH = Color(255,218,185)
-GREEN = Color(  0,255,  0)
-PINK  = Color(255,  0,170)
-RED   = Color(255,  0,  0)
-WHITE = Color(255,255,255)
-WWHITE= Color(255,255,100) # Warm white
-YELLOW= Color(255,255,  0)
-ORANGE= Color(212,165,  25)
-
-# Summarize colors: [BLACK->WHITE, RED->BLUE (rainbow)]
-colors= [BLACK, WHITE, WWHITE, RED, YELLOW, GREEN, BLUE]
-num_of_colors = len(colors)
+BLACK = 0
+WWHITE= (64*256+64)*256+25

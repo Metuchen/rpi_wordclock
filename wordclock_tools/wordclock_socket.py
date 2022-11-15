@@ -10,7 +10,7 @@ class ThreadedTCPRequestHandler(SocketServer.BaseRequestHandler):
         self.wclk.wcs.allClients.add(self)
         self.mainloop()
         self.wclk.wcs.allClients.discard(self)
-        print "Connection to {0} terminated".format(str(self.client_address[0]))
+        print ("Connection to {0} terminated".format(str(self.client_address[0])))
 
     def mainloop(self):
         while True:
@@ -24,11 +24,11 @@ class ThreadedTCPRequestHandler(SocketServer.BaseRequestHandler):
             try:
                 data = json.loads(jdata)
             except:
-                print "Invalid data from {0}".format(str(self.client_address[0]))
+                print( "Invalid data from {0}".format(str(self.client_address[0])))
                 return
 
             if (data['API'] != 2 ):
-                print 'Wrong API: Expected API = 2'
+                print ('Wrong API: Expected API = 2')
                 return
 
             if 'GET_CONFIG' in data:
@@ -43,7 +43,7 @@ class ThreadedTCPRequestHandler(SocketServer.BaseRequestHandler):
             else:
                 e_msg= "Can\'t handle json-request..."
                 self.send_json({ 'ERROR_MSG' : e_msg })
-                print e_msg
+                print (e_msg)
                 return
 
     def send_json(self, jsonobj):
